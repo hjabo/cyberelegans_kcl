@@ -1,0 +1,49 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ScreenShot : MonoBehaviour
+{
+    // The folder we place all screenshots inside.
+    // If the folder exists we will append numbers to create an empty folder.
+    public string folder = "ScreenshotMovieOutput";
+    public int frameRate = 25;
+    public int sizeMultiplier = 1;
+
+    private string realFolder = "";
+
+    static ScreenShot mInstance;
+    public static ScreenShot Inst { get { return mInstance; } }
+
+
+    void Awake()
+    {
+        mInstance = this;
+    }
+
+    void Start()
+    {
+        // Set the playback framerate!
+        // (real time doesn't influence time anymore)
+        Time.captureFramerate = frameRate;
+
+        // Find a folder that doesn't exist yet by appending numbers!
+        realFolder = folder;
+        int count = 1;
+        while (System.IO.Directory.Exists(realFolder))
+        {
+            realFolder = folder + count;
+            count++;
+        }
+        // Create the folder
+        System.IO.Directory.CreateDirectory(realFolder);
+    }
+    public void Capture()
+    {
+        // name is "realFolder/shot 0005.png"
+        var name = string.Format("{0}/shot {1:D04}.png", realFolder, Time.frameCount);
+
+        UnityEngine.ScreenCapture.CaptureScreenshot(name, sizeMultiplier);
+    }
+
+}
